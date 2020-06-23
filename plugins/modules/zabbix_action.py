@@ -182,25 +182,33 @@ options:
     default_message:
         description:
             - Problem message default text.
+            - With >= Zabbix 5.0 this field is removed from the API and is dropped silently by module.
+            - Works only with < Zabbix 5.0
     default_subject:
         description:
             - Problem message default subject.
+            - With >= Zabbix 5.0 this field is removed from the API and is dropped silently by module.
+            - Works only with < Zabbix 5.0
     recovery_default_message:
         description:
             - Recovery message text.
-            - Works only with >= Zabbix 3.2
+            - With >= Zabbix 5.0 this field is removed from the API and is dropped silently by module.
+            - Works only with >= Zabbix 3.2 and < Zabbix 5.0
     recovery_default_subject:
         description:
             - Recovery message subject.
-            - Works only with >= Zabbix 3.2
+            - With >= Zabbix 5.0 this field is removed from the API and is dropped silently by module.
+            - Works only with >= Zabbix 3.2 and < Zabbix 5.0
     acknowledge_default_message:
         description:
             - Update operation (known as "Acknowledge operation" before Zabbix 4.0) message text.
-            - Works only with >= Zabbix 3.4
+            - With >= Zabbix 5.0 this field is removed from the API and is dropped silently by module.
+            - Works only with >= Zabbix 3.4 and < Zabbix 5.0
     acknowledge_default_subject:
         description:
             - Update operation (known as "Acknowledge operation" before Zabbix 4.0) message subject.
-            - Works only with >= Zabbix 3.4
+            - With >= Zabbix 5.0 this field is removed from the API and is dropped silently by module.
+            - Works only with >= Zabbix 3.4 and < Zabbix 5.0
     operations:
         type: list
         description:
@@ -374,7 +382,7 @@ extends_documentation_fragment:
 EXAMPLES = '''
 # Trigger action with only one condition
 - name: Deploy trigger action
-  zabbix_action:
+  community.zabbix.zabbix_action:
     server_url: "http://zabbix.example.com/zabbix/"
     login_user: Admin
     login_password: secret
@@ -397,7 +405,7 @@ EXAMPLES = '''
 
 # Trigger action with multiple conditions and operations
 - name: Deploy trigger action
-  zabbix_action:
+  community.zabbix.zabbix_action:
     server_url: "http://zabbix.example.com/zabbix/"
     login_user: Admin
     login_password: secret
@@ -430,7 +438,7 @@ EXAMPLES = '''
 
 # Trigger action with recovery and acknowledge operations
 - name: Deploy trigger action
-  zabbix_action:
+  community.zabbix.zabbix_action:
     server_url: "http://zabbix.example.com/zabbix/"
     login_user: Admin
     login_password: secret
@@ -484,6 +492,7 @@ except ImportError:
     HAS_ZABBIX_API = False
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+from distutils.version import LooseVersion
 
 
 class Zapi(object):
@@ -493,6 +502,7 @@ class Zapi(object):
     def __init__(self, module, zbx):
         self._module = module
         self._zapi = zbx
+        self._zbx_api_version = zbx.api_version()[:5]
 
     def check_if_action_exists(self, name):
         """Check if action exists.
@@ -714,13 +724,18 @@ class Zapi(object):
             mediatype matching mediatype name
 
         """
+        if LooseVersion(self._zbx_api_version) >= LooseVersion('4.4'):
+            filter = {'name': [mediatype_name]}
+        else:
+            filter = {'description': [mediatype_name]}
+
         try:
             if str(mediatype_name).lower() == 'all':
                 return '0'
             mediatype_list = self._zapi.mediatype.get({
                 'output': 'extend',
                 'selectInventory': 'extend',
-                'filter': {'description': [mediatype_name]}
+                'filter': filter
             })
             if len(mediatype_list) < 1:
                 self._module.fail_json(msg="Media type not found: %s" % mediatype_name)
@@ -810,6 +825,7 @@ class Action(object):
         self._module = module
         self._zapi = zbx
         self._zapi_wrapper = zapi_wrapper
+        self._zbx_api_version = zbx.api_version()[:5]
 
     def _construct_parameters(self, **kwargs):
         """Construct parameters.
@@ -843,11 +859,22 @@ class Action(object):
                 'enabled',
                 'disabled'], kwargs['status'])
         }
+
         if kwargs['event_source'] == 'trigger':
-            if float(self._zapi.api_version().rsplit('.', 1)[0]) >= 4.0:
+            if LooseVersion(self._zbx_api_version) >= LooseVersion('4.0'):
                 _params['pause_suppressed'] = '1' if kwargs['pause_in_maintenance'] else '0'
             else:
                 _params['maintenance_mode'] = '1' if kwargs['pause_in_maintenance'] else '0'
+
+        if LooseVersion(self._zbx_api_version) >= LooseVersion('5.0'):
+            # remove some fields regarding
+            # https://www.zabbix.com/documentation/5.0/manual/api/reference/action/object
+            _params.pop('def_longdata', None)
+            _params.pop('def_shortdata', None)
+            _params.pop('r_longdata', None)
+            _params.pop('r_shortdata', None)
+            _params.pop('ack_longdata', None)
+            _params.pop('ack_shortdata', None)
 
         return _params
 
