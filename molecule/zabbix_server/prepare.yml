@@ -11,6 +11,7 @@
           - sudo
         state: present
       register: installation_dependencies
+      until: installation_dependencies is succeeded
       when:
         - ansible_os_family == 'RedHat'
 
@@ -24,12 +25,16 @@
           - sudo
         update_cache: True
         state: present
+      register: installation_dependencies
+      until: installation_dependencies is succeeded
       when:
         - ansible_os_family != 'RedHat'
 
     - name: PyMySQL
       pip:
         name: PyMySQL
+      register: installation_dependencies
+      until: installation_dependencies is succeeded
       when:
         - ansible_distribution == 'Ubuntu'
 
@@ -58,7 +63,5 @@
   roles:
     - role: geerlingguy.postgresql
       when: inventory_hostname in groups['postgresql']
-      become: True
     - role: geerlingguy.mysql
       when: inventory_hostname in groups['mysql']
-      become: True

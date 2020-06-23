@@ -21,7 +21,7 @@ jobs:
       matrix:
         molecule_distro:
           - container: mysql-centos
-            image: milcom/centos7-systemd
+            image: geerlingguy/docker-centos7-ansible:latest
             group: mysql
           - container: pgsql-centos
             image: milcom/centos7-systemd
@@ -55,17 +55,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
 
-      - name: Build the collection
-        run: |
-          collection_file=$( basename $(ansible-galaxy collection build -f | awk -F" " '{print $NF}'))
-          echo "::set-env name=COLLECTION_FILE::$collection_file"
-
-      - name: Install the collection
-        run: ansible-galaxy collection install $COLLECTION_FILE
-
       - name: Run role tests
         run: >-
           MY_MOLECULE_CONTAINER=${{ matrix.molecule_distro.container }}
           MY_MOLECULE_IMAGE=${{ matrix.molecule_distro.image }}
           MY_MOLECULE_GROUP=${{ matrix.molecule_distro.group }}
-          molecule --debug test -s ${{ matrix.collection_role }}
+          molecule test -s ${{ matrix.collection_role }}
