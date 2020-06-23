@@ -30,6 +30,15 @@
       when:
         - ansible_os_family != 'RedHat'
 
+    - name: "Installing which on NON-CentOS"
+      shell: "apt-get update"
+      args:
+        warn: False
+      register: installation_dependencies
+      until: installation_dependencies is succeeded
+      when:
+        - ansible_os_family != 'RedHat'
+
     - name: PyMySQL
       pip:
         name: PyMySQL
