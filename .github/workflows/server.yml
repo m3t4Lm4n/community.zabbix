@@ -26,12 +26,12 @@ jobs:
           - container: pgsql-centos
             image: geerlingguy/docker-centos7-ansible:latest
             group: postgresql
-          - container: mysql-ubuntu
-            image: geerlingguy/docker-ubuntu1804-ansible:latest
-            group: mysql
-          # - container: pgsql-ubuntu
+          # - container: mysql-ubuntu
           #   image: geerlingguy/docker-ubuntu1804-ansible:latest
-          #   group: postgresql
+          #   group: mysql
+          - container: pgsql-ubuntu
+            image: geerlingguy/docker-ubuntu1804-ansible:latest
+            group: postgresql
           # - container: mysql-debian
           #   image: geerlingguy/docker-debian9-ansible:latest
           #   group: mysql
