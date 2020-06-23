@@ -24,7 +24,7 @@ jobs:
             image: geerlingguy/docker-centos7-ansible:latest
             group: mysql
           - container: pgsql-centos
-            image: milcom/centos7-systemd
+            image: geerlingguy/docker-centos7-ansible:latest
             group: postgresql
           # - container: mysql-ubuntu
           #   image: geerlingguy/docker-ubuntu1804-ansible:latest
@@ -35,9 +35,9 @@ jobs:
           # - container: mysql-debian
           #   image: geerlingguy/docker-debian9-ansible:latest
           #   group: mysql
-          ## - container: pgsql-debian
-          ##   image: minimum2scp/systemd-stretch
-          ##   group: postgresql
+          # - container: pgsql-debian
+          #   image: minimum2scp/systemd-stretch
+          #   group: postgresql
         collection_role:
           - zabbix_server
     steps:
@@ -54,6 +54,14 @@ jobs:
           sudo apt install docker
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
+
+      - name: Build the collection
+        run: |
+          collection_file=$( basename $(ansible-galaxy collection build -f | awk -F" " '{print $NF}'))
+          echo "::set-env name=COLLECTION_FILE::$collection_file"
+
+      - name: Install the collection
+        run: ansible-galaxy collection install $COLLECTION_FILE
 
       - name: Run role tests
         run: >-
