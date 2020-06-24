@@ -15,25 +15,25 @@
       when:
         - ansible_os_family == 'RedHat'
 
-    - name: "Installing which on NON-CentOS"
-      apt:
-        name:
-          - net-tools
-          - apt-utils
-          - gpg-agent
-          - python3-pip
-          - sudo
-        update_cache: True
-        state: present
+    - name: "Apt update"
+      shell: "apt-get update"
+      args:
+        warn: False
       register: installation_dependencies
       until: installation_dependencies is succeeded
       when:
         - ansible_os_family != 'RedHat'
 
     - name: "Installing which on NON-CentOS"
-      shell: "apt-get update"
-      args:
-        warn: False
+      apt:
+        name:
+          - net-tools
+          - apt-utils
+          # - gpg-agent
+          - python3-pip
+          - sudo
+        update_cache: True
+        state: present
       register: installation_dependencies
       until: installation_dependencies is succeeded
       when:
