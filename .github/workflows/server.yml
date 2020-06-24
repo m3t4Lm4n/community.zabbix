@@ -23,20 +23,20 @@ jobs:
           - container: pgsql-centos
             image: geerlingguy/docker-centos7-ansible:latest
             group: postgresql
-          - container: mysql-ubuntu
-            image: solita/ubuntu-systemd:xenial
-            group: mysql
-            command: /sbin/init
+          # - container: mysql-ubuntu
+          #   image: solita/ubuntu-systemd:xenial
+          #   group: mysql
+          #   command: /sbin/init
           - container: pgsql-ubuntu
             image: solita/ubuntu-systemd:xenial
             group: postgresql
             command: /sbin/init
-          - container: mysql-debian
-            image: geerlingguy/docker-debian9-ansible:latest
-            group: mysql
-          # - container: pgsql-debian
-          #   image: minimum2scp/systemd-stretch
-          #   group: postgresql
+          # - container: mysql-debian
+          #   image: geerlingguy/docker-debian9-ansible:latest
+          #   group: mysql
+          - container: pgsql-debian
+            image: minimum2scp/systemd-stretch
+            group: postgresql
         collection_role:
           - zabbix_server
     steps:
