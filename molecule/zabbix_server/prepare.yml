@@ -2,7 +2,7 @@
 - name: Prepare
   hosts: all
   pre_tasks:
-    - name: "Installing packages"
+    - name: "Installing packages on CentOS"
       yum:
         name:
           - net-tools
@@ -24,12 +24,11 @@
       when:
         - ansible_os_family != 'RedHat'
 
-    - name: "Installing which on NON-CentOS"
+    - name: "Installing packages on NON-CentOS"
       apt:
         name:
           - net-tools
           - apt-utils
-          # - gpg-agent
           - python3-pip
           - sudo
         update_cache: True

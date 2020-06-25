@@ -23,17 +23,17 @@ jobs:
           - container: pgsql-centos
             image: geerlingguy/docker-centos7-ansible:latest
             group: postgresql
-          # - container: mysql-ubuntu
-          #   image: solita/ubuntu-systemd:xenial
-          #   group: mysql
-          #   command: /sbin/init
+          - container: mysql-ubuntu
+            image: solita/ubuntu-systemd:xenial
+            group: mysql
+            command: /sbin/init
           - container: pgsql-ubuntu
             image: solita/ubuntu-systemd:xenial
             group: postgresql
             command: /sbin/init
-          # - container: mysql-debian
-          #   image: geerlingguy/docker-debian9-ansible:latest
-          #   group: mysql
+          - container: mysql-debian
+            image: minimum2scp/systemd-stretch:latest
+            group: mysql
           - container: pgsql-debian
             image: minimum2scp/systemd-stretch
             group: postgresql
@@ -53,6 +53,9 @@ jobs:
           sudo apt install docker
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
+
+      - name: Stop something
+        run: sudo systemctl stop apparmor.sevice
 
       - name: Build the collection
         run: |
