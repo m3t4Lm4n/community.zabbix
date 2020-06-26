@@ -54,12 +54,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
 
-      - name: Purge mariadb packages
+      - name: Install mariadb packages
         run: |
-          sudo apt-get remove --purge mariadb-server mariadb-client 2>/dev/null
-          sudo apt-get autoremove
-          sudo apt-get autoclean
-          sudo apt-get install mariadb-server mariadb-client
+          ls /usr/bin/apt && sudo apt-get install -y mariadb-server 2>/dev/null
+          ls /usr/bin/dnf && sudo dnf install -y mariadb-server 2>/dev/null
 
           #      - name: Disable apparmor.service
           #        run: |
