@@ -50,13 +50,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install docker
+          sudo apt install -y docker
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
 
       - name: Install docker-systemctl-replacement dependencies
         run: |
-          sudo apt install python wget
+          sudo apt install -y python wget
 
       - name: Download docker-systemctl-replacement
         run: |
@@ -65,8 +65,9 @@ jobs:
 
       - name: Install and start rsyslog
         run: |
-          sudo apt install rsyslog
-          sudo systemctl restart rsyslog
+          sudo apt install -y rsyslog
+          ls -l /dev/log
+          #sudo systemctl restart rsyslog
 
       - name: Build the collection
         run: |
