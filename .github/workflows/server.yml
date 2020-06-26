@@ -50,19 +50,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install docker
+          sudo apt install docker python wget
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
 
-      - name: Install mariadb packages
+      - name: Download docker-systemctl-replacement
         run: |
-          sudo apt-get install -y mariadb-server-10.1
-
-          #      - name: Disable apparmor.service
-          #        run: |
-          #          sudo systemctl is-enabled apparmor &&\
-          #          sudo systemctl stop apparmor 2>/dev/null
-          #          sudo systemctl disable apparmor 2>/dev/null
+          sudo wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl.py -O /usr/local/bin/systemctl
+          sudo chmod +x /usr/local/bin/systemctl
+          sudo PATH=/usr/local/bin:$PATH
 
       - name: Build the collection
         run: |
