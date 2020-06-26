@@ -63,8 +63,10 @@ jobs:
           sudo wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl.py -O /usr/local/bin/systemctl
           sudo chmod +x /usr/local/bin/systemctl
 
-      - name: Install rsyslog
-        run: sudo apt install rsyslog
+      - name: Install and start rsyslog
+        run: |
+          sudo apt install rsyslog
+          sudo rsyslogd
 
       - name: Build the collection
         run: |
