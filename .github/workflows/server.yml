@@ -50,15 +50,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install docker apparmor
+          sudo apt install docker
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
 
       - name: Disable apparmor.service
         run: |
-          sudo systemctl is-enabled apparmor.service
-          sudo systemctl disable apparmor.service
-          sudo systemctl is-enabled apparmor.service
+          sudo systemctl is-enabled apparmor &&\
+          sudo systemctl stop apparmor 2>/dev/null
+          sudo systemctl disable apparmor 2>/dev/null
 
       - name: Build the collection
         run: |
