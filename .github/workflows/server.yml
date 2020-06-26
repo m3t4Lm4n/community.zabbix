@@ -56,7 +56,7 @@ jobs:
 
       - name: Download docker-systemctl-replacement
         run: |
-          sudo wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl.py -O /usr/local/bin/systemctl
+          wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl.py -O /usr/local/bin/systemctl
           sudo chmod +x /usr/local/bin/systemctl
           sudo PATH=/usr/local/bin:$PATH
 
