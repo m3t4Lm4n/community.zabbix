@@ -54,10 +54,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
 
-      - name: Stop something
+      - name: Disable apparmor.service
         run: |
-          sudo systemctl stop apparmor.sevice
+          sudo systemctl is-enabled apparmor.service
           sudo systemctl disable apparmor.service
+          sudo systemctl is-enabled apparmor.service
 
       - name: Build the collection
         run: |
