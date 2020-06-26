@@ -54,11 +54,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r molecule/requirements.txt
 
-      - name: Disable apparmor.service
+      - name: Purge mariadb packages
         run: |
-          sudo systemctl is-enabled apparmor &&\
-          sudo systemctl stop apparmor 2>/dev/null
-          sudo systemctl disable apparmor 2>/dev/null
+          sudo apt-get remove --purge mariadb-server mariadb-client 2>/dev/null
+          sudo apt-get autoremove
+          sudo apt-get autoclean
+          sudo apt-get install mariadb-server mariadb-client
+
+          #      - name: Disable apparmor.service
+          #        run: |
+          #          sudo systemctl is-enabled apparmor &&\
+          #          sudo systemctl stop apparmor 2>/dev/null
+          #          sudo systemctl disable apparmor 2>/dev/null
 
       - name: Build the collection
         run: |
