@@ -69,6 +69,11 @@ jobs:
           ls -l /dev/log
           #sudo systemctl restart rsyslog
 
+      - name: Install mariadb-server
+        run: |
+          sudo apt install -y mariadb-server
+          sudo systemctl start mysql
+
       - name: Build the collection
         run: |
           collection_file=$( basename $(ansible-galaxy collection build -f | awk -F" " '{print $NF}'))
